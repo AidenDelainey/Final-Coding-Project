@@ -9,19 +9,25 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((64,64))
         self.image.fill((255,255,255))
         self.rect = self.image.get_rect(topleft = pos)
+        self.radius = 30
         
         ## movement ##
         self.direction = pygame.math.Vector2()
-        self.speed = 5
+        self.walkspeed = 5
+        self.sprintspeed = 10
+        self.movespeed = 0
         
         self.obstacle_sprites = obstacle_sprites
-        ## other
+        ## equipment ##
+        
         
     def inputs(self):
         keys = pygame.key.get_pressed()
         
         if keys[pygame.K_LSHIFT]:
-            self.speed = 10
+            self.movespeed = self.sprintspeed
+        else:
+            self.movespeed = self.walkspeed
         
         if keys[pygame.K_w]:
             self.direction.y = -1
@@ -36,15 +42,16 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = -1
         else:
             self.direction.x = 0
+        return(self.movespeed)
             
             
-    def move(self, speed):
+    def move(self, movespeed):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
             
-        self.rect.x += self.direction.x * self.speed
+        self.rect.x += self.direction.x * self.movespeed
         self.collision('horizontal')
-        self.rect.y += self.direction.y * self.speed
+        self.rect.y += self.direction.y * self.movespeed
         self.collision('vertical')
         
     def collision(self, direction):
@@ -66,4 +73,4 @@ class Player(pygame.sprite.Sprite):
                             
     def update(self):
         self.inputs()
-        self.move(self.speed)
+        self.move(self.movespeed)
